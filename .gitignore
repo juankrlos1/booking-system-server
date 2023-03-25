@@ -1,0 +1,46 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+package-lock.json
+yarn.lock
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*.swp
+*.swo
+*.tmp
+*.temp
+*.bak
+*.sw[op]
+*~.nib
+*.pyc
+*.class
+*~
+*.orig
+*.rej
+*.lock
+
+# Testing
+/coverage
+.nyc_output
