@@ -11,11 +11,6 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { user, USER_SERVICE_NAME } from './proto/user';
-import { GrpcMethod } from '@nestjs/microservices';
-import GetUsersRequest = user.GetUsersRequest;
-import GetUsersResponse = user.GetUsersResponse;
-import UserMessage = user.UserMessage;
 
 @Controller('users')
 export class UserController {
@@ -26,17 +21,9 @@ export class UserController {
     return await this.userService.create(createUserDto);
   }
 
-  @GrpcMethod(USER_SERVICE_NAME, 'GetUsers')
-  async getUsers(request: GetUsersRequest): Promise<GetUsersResponse> {
-    console.log('request:' + { request });
-    const users = await this.userService.findAll();
-    const userMessages: UserMessage[] = users.map(
-      this.userService.userToUserMessage,
-    );
-
-    const getUsersResponse = new GetUsersResponse();
-    getUsersResponse.users = userMessages;
-    return getUsersResponse;
+  @Get()
+  async getUsers() {
+    return this.userService.findAll();
   }
 
   @Get(':id')

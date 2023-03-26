@@ -1,24 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Transport } from '@nestjs/microservices';
-import { INestMicroservice, ValidationPipe } from '@nestjs/common';
-import { join } from 'path';
-import { protobufPackage } from './auth/proto/auth.pb';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { AllExceptionFilter } from './common/filters/http-exception.filter';
+import * as process from 'process';
+
+const logger = new Logger('BOOKING_MAIN_APP');
 
 async function bootstrap() {
-  const app: INestMicroservice = await NestFactory.createMicroservice(
-    AppModule,
-    {
-      transport: Transport.GRPC,
-      options: {
-        url: '0.0.0.0:50051',
-        package: protobufPackage,
-        protoPath: join(__dirname, '../src/auth/proto/auth.proto'),
-      },
-    },
-  );
-  /*const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api/v1');
 
@@ -27,14 +16,13 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
-  );*/
+  );
 
   app.useGlobalFilters(new AllExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  await app.listen();
-  console.log('Microservice for authentication is listening');
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap()
-  .then(() => console.log('start auth microservice'))
-  .catch((error) => console.error('Error: ', error));
+  .then(() => logger.log('Start auth microservice'))
+  .catch((error) => logger.error('Error: ', error));

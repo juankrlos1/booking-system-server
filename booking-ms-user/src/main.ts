@@ -1,23 +1,27 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { join } from 'path';
-import { INestMicroservice } from '@nestjs/common';
-import { Transport } from '@nestjs/microservices';
-import { protobufPackage } from './user/proto/user';
+import { ValidationPipe } from '@nestjs/common';
+import { config } from 'dotenv';
+config();
+import process from 'process';
+import { AllExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
-  const app: INestMicroservice = await NestFactory.createMicroservice(
-    AppModule,
-    {
-      transport: Transport.GRPC,
-      options: {
-        url: '0.0.0.0:50052',
-        package: protobufPackage,
-        protoPath: join(__dirname, '../src/user/proto/user.proto'),
-      },
-    },
+  const app = await NestFactory.create(AppModule);
+
+  app.useGlobalFilters(new AllExceptionFilter());
+  app.setGlobalPrefix('api/v1');
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
   );
-  await app.listen();
+
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  await app.listen(3002);
 }
 bootstrap()
   .then(() => console.log('Start user microservice'))
