@@ -45,6 +45,8 @@ services:
       - DB_USERNAME=booking-admin-user
       - DB_PASSWORD=kGiV0r5NBoy4XcAtu_xcWQ
       - DB_SSLMODE=require
+      - USER_SERVICE_URL=http://booking-ms-user:3002/api/v1/users
+      - ROOM_SERVICE_URL=http://booking-ms-room:3003/api/v1/rooms
 
   booking-ms-room:
     build: ./booking-ms-room
