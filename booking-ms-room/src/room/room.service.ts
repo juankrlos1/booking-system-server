@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Room } from './entities/room.entity';
 import { RoomFilter } from './dto/room-filter.dto';
 import { RoomMapper } from './mappers/room.mapper';
 import { CreateRoomDto } from './dto/create-room.dto';
+import { UpdateRoomDto } from './dto/update-room.dto';
 
 @Injectable()
 export class RoomService {
@@ -96,5 +97,18 @@ export class RoomService {
   async createRoom(createRoomDto: CreateRoomDto) {
     const room = this.roomRepository.create(createRoomDto);
     return await this.roomRepository.save(room);
+  }
+
+  async updateRoom(id: number, updateRoomDto: UpdateRoomDto) {
+    const user = await this.roomRepository.preload({
+      id,
+      ...updateRoomDto,
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Room with ID ${id} not found.`);
+    }
+
+    return await this.roomRepository.save(user);
   }
 }

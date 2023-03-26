@@ -63,7 +63,7 @@ export class RoomsService {
   }
 
   public async updateRoom(id: number, updateRoomDto: UpdateRoomDto) {
-    const response = await this.httpClient.post(
+    const response = await this.httpClient.put(
       `${this.roomBaseUrl}/${id}`,
       updateRoomDto,
     );

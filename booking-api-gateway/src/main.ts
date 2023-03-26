@@ -15,6 +15,17 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformResponseInterceptor());
   app.setGlobalPrefix('api/v1');
 
+  app.enableCors({
+    origin: (origin, callback) => {
+      callback(null, true);
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
+
   const options = new DocumentBuilder()
     .setTitle('Booking System Api Gateway')
     .setDescription(
