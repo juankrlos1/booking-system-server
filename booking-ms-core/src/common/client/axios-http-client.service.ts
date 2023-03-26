@@ -18,12 +18,5 @@ export class AxiosHttpClientService implements IHttpClient {
     return response.data;
   }
 
-  async put<T = any>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig,
-  ): Promise<T> {
-    const response = await axios.put<T>(url, data, config);
-    return response.data;
-  }
+  // Implementa otros métodos según sea necesario
 }

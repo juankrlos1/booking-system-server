@@ -1,4 +1,3 @@
-// room.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -13,7 +12,7 @@ import { Level } from '../../level/entities/level.entity';
 @Entity('rooms')
 export class Room {
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
 
   @Column({ type: 'varchar', length: 255, unique: true })
   name: string;
@@ -31,18 +30,18 @@ export class Room {
   status: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  createdAt: Date;
+  createdAt?: Date;
 
   @Column({ name: 'created_by', type: 'varchar', length: 100, nullable: true })
-  createdBy: string;
+  createdBy?: string;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp', nullable: true })
-  updatedAt: Date;
+  updatedAt?: Date;
 
   @Column({ name: 'updated_by', type: 'varchar', length: 100, nullable: true })
-  updatedBy: string;
+  updatedBy?: string;
 
   @ManyToOne(() => Level)
   @JoinColumn({ name: 'level_id' })
-  level: Level;
+  level?: Level;
 }

@@ -5,6 +5,7 @@ import { ReservationModule } from './reservation/reservation.module';
 import { ReservationUserModule } from './reservation-user/reservation-user.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { HttpClientModule } from './http-client/http-client.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
     ReservationModule,
     ReservationUserModule,
+    HttpClientModule,
   ],
   controllers: [AppController],
   providers: [AppService],

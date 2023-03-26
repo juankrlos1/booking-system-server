@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Room } from './entities/room.entity';
 import { RoomFilter } from './dto/room-filter.dto';
+import { RoomMapper } from './mappers/room.mapper';
+import { CreateRoomDto } from './dto/create-room.dto';
 
 @Injectable()
 export class RoomService {
   constructor(
     @InjectRepository(Room)
     private readonly roomRepository: Repository<Room>,
+    private readonly roomMapper: RoomMapper,
   ) {}
 
   async findAll(filter: RoomFilter) {
@@ -21,7 +24,7 @@ export class RoomService {
 
       const totalPages = Math.ceil(totalItems / filter.limit);
       return {
-        items: data,
+        items: this.roomMapper.toResponseDtoList(data),
         pagination: {
           page: filter.page,
           limit: filter.limit,
@@ -36,11 +39,34 @@ export class RoomService {
     };
   }
 
+  async findById(id: number) {
+    const rooms = await this.roomRepository.findOne({
+      relations: ['level'],
+      where: { id },
+    });
+    return {
+      items: this.roomMapper.toResponseDto(rooms),
+    };
+  }
+
   async findByLevel(level: number) {
-    return this.roomRepository.find({
+    const rooms = await this.roomRepository.find({
       relations: ['level'],
       where: { levelId: level },
     });
+    return {
+      items: this.roomMapper.toResponseDtoList(rooms),
+    };
+  }
+
+  async findByStatus() {
+    const rooms = await this.roomRepository.find({
+      relations: ['level'],
+      where: { status: 'ACTIVO' },
+    });
+    return {
+      items: this.roomMapper.toResponseDtoList(rooms),
+    };
   }
 
   private createFilteredQueryBuilder(
@@ -65,5 +91,10 @@ export class RoomService {
     }
 
     return queryBuilder;
+  }
+
+  async createRoom(createRoomDto: CreateRoomDto) {
+    const room = this.roomRepository.create(createRoomDto);
+    return await this.roomRepository.save(room);
   }
 }
