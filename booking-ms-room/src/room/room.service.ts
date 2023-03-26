@@ -1,45 +1,69 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Room } from './entities/room.entity';
-import { CreateRoomDto } from './dto/create-room.dto';
-import { UpdateRoomDto } from './dto/update-room.dto';
+import { RoomFilter } from './dto/room-filter.dto';
 
 @Injectable()
 export class RoomService {
   constructor(
     @InjectRepository(Room)
-    private roomRepository: Repository<Room>,
+    private readonly roomRepository: Repository<Room>,
   ) {}
 
-  async create(createRoomDto: CreateRoomDto): Promise<Room> {
-    const room = this.roomRepository.create(createRoomDto);
-    return this.roomRepository.save(room);
-  }
+  async findAll(filter: RoomFilter) {
+    const queryBuilder = this.createFilteredQueryBuilder(filter);
+    if (filter.page && filter.limit) {
+      const [data, totalItems] = await queryBuilder
+        .take(filter.limit)
+        .skip((filter.page - 1) * filter.limit)
+        .getManyAndCount();
 
-  findAll(): Promise<Room[]> {
-    return this.roomRepository.find({ relations: ['level'] });
-  }
-
-  async findOne(id: number): Promise<Room> {
-    const room = await this.roomRepository.findOne({
-      where: { id },
-      relations: ['level'],
-    });
-    if (!room) {
-      throw new NotFoundException(`Room with ID ${id} not found`);
+      const totalPages = Math.ceil(totalItems / filter.limit);
+      return {
+        items: data,
+        pagination: {
+          page: filter.page,
+          limit: filter.limit,
+          totalPages,
+          totalItems,
+        },
+      };
     }
-    return room;
+    const items = await queryBuilder.getMany();
+    return {
+      items,
+    };
   }
 
-  async update(id: number, updateRoomDto: UpdateRoomDto): Promise<Room> {
-    const room = await this.findOne(id);
-    this.roomRepository.merge(room, updateRoomDto);
-    return this.roomRepository.save(room);
+  async findByLevel(level: number) {
+    return this.roomRepository.find({
+      relations: ['level'],
+      where: { levelId: level },
+    });
   }
 
-  async remove(id: number): Promise<void> {
-    const room = await this.findOne(id);
-    await this.roomRepository.remove(room);
+  private createFilteredQueryBuilder(
+    filter: RoomFilter,
+  ): SelectQueryBuilder<Room> {
+    const { name, status, capacity, level } = filter;
+    const queryBuilder = this.roomRepository
+      .createQueryBuilder('room')
+      .leftJoinAndSelect('room.level', 'level');
+
+    if (name) {
+      queryBuilder.andWhere('room.name LIKE :name', { name: `%${name}%` });
+    }
+    if (status) {
+      queryBuilder.andWhere('room.status = :status', { status });
+    }
+    if (capacity) {
+      queryBuilder.andWhere('room.capacity = :capacity', { capacity });
+    }
+    if (level) {
+      queryBuilder.andWhere('room.levelId = :level', { level });
+    }
+
+    return queryBuilder;
   }
 }

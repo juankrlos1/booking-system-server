@@ -1,42 +1,18 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Query, Param, ParseIntPipe } from '@nestjs/common';
 import { RoomService } from './room.service';
-import { CreateRoomDto } from './dto/create-room.dto';
-import { UpdateRoomDto } from './dto/update-room.dto';
+import { RoomFilter } from './dto/room-filter.dto';
 
 @Controller('rooms')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
-  @Post()
-  create(@Body() createRoomDto: CreateRoomDto) {
-    return this.roomService.create(createRoomDto);
-  }
-
   @Get()
-  findAll() {
-    return this.roomService.findAll();
+  findAll(@Query() filter: RoomFilter) {
+    return this.roomService.findAll(filter);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.roomService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
-    return this.roomService.update(+id, updateRoomDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.roomService.remove(+id);
+  @Get('/level/:level')
+  findByLevel(@Param('level', ParseIntPipe) level: number) {
+    return this.roomService.findByLevel(level);
   }
 }
