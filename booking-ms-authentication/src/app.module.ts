@@ -24,6 +24,12 @@ import { DepartmentModule } from './department/department.module';
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
       logging: true,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+      extra: {
+        sslmode: process.env.DB_SSLMODE,
+      },
       //synchronize: true,
     }),
     RolesModule,
