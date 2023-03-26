@@ -1,12 +1,13 @@
-FROM node:18.14.1
+FROM node:18.14.1-alpine
 
+RUN mkdir -p /usr/src/app && chown -R node:node /usr/src/app
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+USER node
+COPY --chown=node:node package*.json ./
+RUN npm ci --only=production
 
-RUN npm install
-
-COPY . .
+COPY --chown=node:node . .
 
 EXPOSE 3000
 
