@@ -8,12 +8,16 @@ import { RoomsModule } from './modules/rooms/rooms.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { ReservationsModule } from './modules/reservations/reservations.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { HttpClientModule } from './modules/http-client/http-client.module';
+import config from './config/microservices.config';
+import { AxiosHttpClientService } from './common/client/axios-http-client.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: ['.env'],
       isGlobal: true,
+      load: [config],
     }),
     AuthModule,
     UsersModule,
@@ -21,8 +25,9 @@ import { AdminModule } from './modules/admin/admin.module';
     NotificationsModule,
     ReservationsModule,
     AdminModule,
+    HttpClientModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AxiosHttpClientService],
 })
 export class AppModule {}

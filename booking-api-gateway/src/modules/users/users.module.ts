@@ -1,25 +1,20 @@
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { join } from 'path';
-import { protobufPackage, USER_SERVICE_NAME } from './proto/user';
+import { ConfigModule } from '@nestjs/config';
+import { HTTP_CLIENT } from '../../common/constants/tokens';
+import { AxiosHttpClientService } from '../../common/client/axios-http-client.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [
-    ClientsModule.register([
-      {
-        name: USER_SERVICE_NAME,
-        transport: Transport.GRPC,
-        options: {
-          url: '0.0.0.0:50052',
-          package: protobufPackage,
-          protoPath: join(__dirname, 'proto/user.proto'),
-        },
-      },
-    ]),
-  ],
+  imports: [ConfigModule, AuthModule],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [
+    UsersService,
+    {
+      provide: HTTP_CLIENT,
+      useClass: AxiosHttpClientService,
+    },
+  ],
 })
 export class UsersModule {}
