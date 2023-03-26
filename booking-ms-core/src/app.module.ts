@@ -18,7 +18,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
       logging: true,
-      //synchronize: true,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+      extra: {
+        sslmode: process.env.DB_SSLMODE,
+      },
     }),
     ReservationModule,
     ReservationUserModule,

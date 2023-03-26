@@ -30,7 +30,6 @@ import { DepartmentModule } from './department/department.module';
       extra: {
         sslmode: process.env.DB_SSLMODE,
       },
-      //synchronize: true,
     }),
     RolesModule,
     AreaModule,
