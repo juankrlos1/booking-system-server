@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { LevelService } from './level.service';
 import { CreateLevelDto } from './dto/create-level.dto';
 import { UpdateLevelDto } from './dto/update-level.dto';
 
-@Controller('level')
+@Controller('levels')
 export class LevelController {
   constructor(private readonly levelService: LevelService) {}
 
@@ -20,6 +29,11 @@ export class LevelController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.levelService.findOne(+id);
+  }
+
+  @Get('/building/:id')
+  findByBuilding(@Param('id', ParseIntPipe) id: number) {
+    return this.levelService.findOneByBuilding(+id);
   }
 
   @Patch(':id')

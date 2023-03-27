@@ -11,6 +11,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { HttpClientModule } from './modules/http-client/http-client.module';
 import config from './config/microservices.config';
 import { AxiosHttpClientService } from './common/client/axios-http-client.service';
+import { LevelsModule } from './modules/levels/levels.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AxiosHttpClientService } from './common/client/axios-http-client.servic
     ReservationsModule,
     AdminModule,
     HttpClientModule,
+    LevelsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AxiosHttpClientService],
