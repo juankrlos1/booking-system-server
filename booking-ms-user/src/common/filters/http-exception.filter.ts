@@ -3,37 +3,34 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 
-@Catch(Error)
+@Catch(HttpException)
 export class AllExceptionFilter implements ExceptionFilter {
-  catch(exception: Error, host: ArgumentsHost) {
+  catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+    const status = exception.getStatus();
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    const exceptionResponse = exception.getResponse();
     let message: string;
     let errors = [];
 
-    if (exception instanceof HttpException) {
-      status = exception.getStatus();
-      const exceptionResponse = exception.getResponse();
-
-      if (typeof exceptionResponse === 'string') {
-        message = exceptionResponse;
-      } else {
-        message = exceptionResponse['message'];
-        errors = exceptionResponse['errors'] || [];
-      }
-    } else if (exception instanceof EntityNotFoundError) {
-      status = HttpStatus.NOT_FOUND;
-      message = exception.message;
+    if (typeof exceptionResponse === 'string') {
+      message = exceptionResponse;
     } else {
-      message = exception.message;
+      const { message: exceptionMessage, errors: exceptionErrors } =
+        exceptionResponse as { message: string | string[]; errors?: any[] };
+
+      if (Array.isArray(exceptionMessage)) {
+        message = 'Bad request';
+        errors = exceptionMessage;
+      } else {
+        message = exceptionMessage;
+        errors = exceptionErrors || [];
+      }
     }
 
     response.status(status).json({

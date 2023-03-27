@@ -5,12 +5,13 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Body, Put,
+  Body,
+  Put,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { RoomFilter } from './dto/room-filter.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
-import {UpdateRoomDto} from "./dto/update-room.dto";
+import { UpdateRoomDto } from './dto/update-room.dto';
 
 @Controller('rooms')
 export class RoomController {
@@ -42,7 +43,10 @@ export class RoomController {
   }
 
   @Put(':id')
-  updateRoom(@Param('id', ParseIntPipe) id: number, @Body() room: UpdateRoomDto) {
+  updateRoom(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() room: UpdateRoomDto,
+  ) {
     return this.roomService.updateRoom(id, room);
   }
 }

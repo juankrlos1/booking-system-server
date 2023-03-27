@@ -11,6 +11,8 @@ import { AdminModule } from './modules/admin/admin.module';
 import { HttpClientModule } from './modules/http-client/http-client.module';
 import config from './config/microservices.config';
 import { AxiosHttpClientService } from './common/client/axios-http-client.service';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AxiosErrorInterceptor } from './common/interceptors/axios.interceptor';
 
 @Module({
   imports: [
@@ -28,6 +30,9 @@ import { AxiosHttpClientService } from './common/client/axios-http-client.servic
     HttpClientModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AxiosHttpClientService],
+  providers: [
+    AppService,
+    AxiosHttpClientService,
+  ],
 })
 export class AppModule {}

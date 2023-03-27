@@ -14,16 +14,13 @@ export class AllExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
-    const exceptionResponse = exception.getResponse();
-    let message: string;
-    let errors = [];
-
-    if (typeof exceptionResponse === 'string') {
-      message = exceptionResponse;
-    } else {
-      message = exceptionResponse['message'];
-      errors = exceptionResponse['errors'] || [];
-    }
+    const exceptionResponse = exception.getResponse() as {
+      message: string;
+      errors: any[];
+      statusCode: number;
+    };
+    const message = exceptionResponse.message || 'An error occurred';
+    const errors = exceptionResponse.errors || [];
 
     response.status(status).json({
       statusCode: status,

@@ -25,7 +25,11 @@ export class ReservationUser {
   @Column({ name: 'created_by', type: 'varchar', length: 100, nullable: true })
   createdBy: string;
 
-  @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'created_at',
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   createdAt: Date;
 
   @Column({ name: 'updated_by', type: 'varchar', length: 100, nullable: true })

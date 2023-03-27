@@ -3,29 +3,53 @@ import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Reservation } from './entities/reservation.entity';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { IHttpClient } from '../common/interfaces/http-client.interface';
 import { HTTP_CLIENT } from '../common/constants/tokens';
+import { ReservationFilter } from './dto/reservation-filter.dto';
+import { ReservationMapper } from './mappers/reservation.mapper';
 
 @Injectable()
 export class ReservationService {
-  private readonly reservationBaseUrl: string;
+  private readonly userBaseUrl: string;
+  private readonly roomBaseUrl: string;
 
   constructor(
     @InjectRepository(Reservation)
     private readonly reservationRepository: Repository<Reservation>,
     private readonly configService: ConfigService,
+    private readonly reservationMapper: ReservationMapper,
     @Inject(HTTP_CLIENT) private readonly httpClient: IHttpClient,
   ) {}
-  create(createReservationDto: CreateReservationDto) {
-    return 'This action adds a new reservation';
+  async create(createReservationDto: CreateReservationDto) {
+    const reservation = this.reservationRepository.create(createReservationDto);
+    return await this.reservationRepository.save(reservation);
   }
 
-  findAll() {
-    return this.reservationRepository.find({
-      relations: ['reservationUsers'],
-    });
+  async findAll(filter: ReservationFilter) {
+    const queryBuilder = this.createFilteredQueryBuilderBooking(filter);
+    if (filter.page && filter.limit) {
+      const [data, totalItems] = await queryBuilder
+        .take(filter.limit)
+        .skip((filter.page - 1) * filter.limit)
+        .getManyAndCount();
+
+      const totalPages = Math.ceil(totalItems / filter.limit);
+      return {
+        items: this.reservationMapper.toResponseDtoList(data),
+        pagination: {
+          page: filter.page,
+          limit: filter.limit,
+          totalPages,
+          totalItems,
+        },
+      };
+    }
+    const items = await queryBuilder.getMany();
+    return {
+      items: this.reservationMapper.toResponseDtoList(items),
+    };
   }
 
   findOne(id: number) {
@@ -41,4 +65,30 @@ export class ReservationService {
   }
 
   private async fetchReservationData() {}
+
+  private createFilteredQueryBuilderBooking(
+    filter: ReservationFilter,
+  ): SelectQueryBuilder<Reservation> {
+    const { userId, status, roomId, reservationDate } = filter;
+    const queryBuilder = this.reservationRepository
+      .createQueryBuilder('reservation')
+      .leftJoinAndSelect('reservation.reservationUsers', 'reservation_user');
+
+    if (userId) {
+      queryBuilder.andWhere('reservation.user_id :userId', { user_id: userId });
+    }
+    if (roomId) {
+      queryBuilder.andWhere('reservation.room_id :roomId', { room_id: roomId });
+    }
+    if (status) {
+      queryBuilder.andWhere('reservation.status = :status', { status });
+    }
+    if (reservationDate) {
+      queryBuilder.andWhere('reservation.reservation_date = :reservationDate', {
+        reservationDate,
+      });
+    }
+
+    return queryBuilder;
+  }
 }

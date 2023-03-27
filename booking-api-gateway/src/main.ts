@@ -6,11 +6,13 @@ import { AllExceptionFilter } from './common/filters/http-exception.filter';
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
 import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
 import * as process from 'process';
+import { AxiosExceptionFilter } from './common/filters/axios-exception.filter';
 
 const logger = new Logger('BOOKING_MAIN_APP');
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new AllExceptionFilter());
+  app.useGlobalFilters(new AxiosExceptionFilter());
   app.useGlobalInterceptors(new TimeoutInterceptor());
   app.useGlobalInterceptors(new TransformResponseInterceptor());
   app.setGlobalPrefix('api/v1');
