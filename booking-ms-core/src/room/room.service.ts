@@ -23,7 +23,9 @@ export class RoomService {
   }
 
   async updateRoomToActive(id: number) {
-    const response = await this.httpClient.get(`${this.roomBaseUrl}/status/active/${id}`);
+    const response = await this.httpClient.post(
+      `${this.roomBaseUrl}/status/active/${id}`,
+    );
     if (response.items && response.items.length === 0)
       throw new NotFoundException();
     this.logger.debug({ response });

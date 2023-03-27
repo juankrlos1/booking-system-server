@@ -50,6 +50,7 @@ export class ReservationsService {
   }
 
   async cancelReservation(id: number) {
+    console.log(this.reservationBaseUrl + '/' + id + '/cancel');
     const response = await this.httpClient.post(
       this.reservationBaseUrl + '/' + id + '/cancel',
     );
