@@ -13,6 +13,7 @@ export class ReservationUserMapper {
   toResponseDtoList(
     roomEntities: ReservationUser[],
   ): ReservationUserResponse[] {
+    if (!Array.isArray(roomEntities) || roomEntities.length === 0) return [];
     return roomEntities.map((entity) => this.toResponseDto(entity));
   }
 }

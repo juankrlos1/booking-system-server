@@ -26,4 +26,14 @@ export class ReservationsService {
       throw new NotFoundException();
     return response;
   }
+
+  async getReservationsByUser(id: number) {
+    const response = await this.httpClient.get(
+      `${this.reservationBaseUrl}/user/${id}`,
+    );
+    console.log({ response });
+    if (response.items && response.items.length === 0)
+      throw new NotFoundException();
+    return response;
+  }
 }

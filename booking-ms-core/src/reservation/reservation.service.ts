@@ -27,6 +27,11 @@ export class ReservationService {
     return await this.reservationRepository.save(reservation);
   }
 
+  async cancelReservation(id: number) {
+    await this.reservationRepository.update(id, { status: 'CANCELED' });
+    return 'Reservation successfully cancelled!';
+  }
+
   async findAll(filter: ReservationFilter) {
     const queryBuilder = this.createFilteredQueryBuilderBooking(filter);
     if (filter.page && filter.limit) {
@@ -52,8 +57,13 @@ export class ReservationService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} reservation`;
+  async findByUser(id: number) {
+    const reservations = await this.reservationRepository.find({
+      where: { userId: id },
+    });
+    return {
+      items: this.reservationMapper.toResponseDtoList(reservations),
+    };
   }
 
   update(id: number, updateReservationDto: UpdateReservationDto) {
