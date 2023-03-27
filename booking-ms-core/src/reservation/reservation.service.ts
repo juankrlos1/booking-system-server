@@ -31,6 +31,7 @@ export class ReservationService {
 
   async cancelReservation(id: number) {
     await this.reservationRepository.update(id, { status: 'CANCELED' });
+    await this.roomService.updateRoomToActive(id);
     return 'Reservation successfully cancelled!';
   }
 

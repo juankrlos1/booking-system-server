@@ -48,4 +48,14 @@ export class ReservationsService {
       throw new NotFoundException();
     return response;
   }
+
+  async cancelReservation(id: number) {
+    const response = await this.httpClient.post(
+      this.reservationBaseUrl + '/' + id + '/cancel',
+    );
+    console.log({ response });
+    if (response.items && response.items.length === 0)
+      throw new NotFoundException();
+    return response;
+  }
 }

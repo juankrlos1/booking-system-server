@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Room } from './entities/room.entity';
@@ -68,6 +68,10 @@ export class RoomService {
     return {
       items: this.roomMapper.toResponseDtoList(rooms),
     };
+  }
+
+  async updateStatusToActive(id: number) {
+    return this.roomRepository.update(id, { status: 'ACTIVO' });
   }
 
   private createFilteredQueryBuilder(

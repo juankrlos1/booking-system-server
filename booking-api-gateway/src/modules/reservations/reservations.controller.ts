@@ -44,4 +44,11 @@ export class ReservationsController {
       createReservationDto,
     );
   }
+
+  @Post(':id/cancel')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'USER')
+  cancelReservation(@Param('id', ParseIntPipe) id: number) {
+    return this.reservationsService.cancelReservation(id);
+  }
 }

@@ -37,6 +37,11 @@ export class RoomController {
     return this.roomService.findByStatus();
   }
 
+  @Post('/status/active/:id')
+  updateStatus(@Param('id', ParseIntPipe) id: number) {
+    return this.roomService.updateStatusToActive(id);
+  }
+
   @Post()
   createRoom(@Body() room: CreateRoomDto) {
     return this.roomService.createRoom(room);
