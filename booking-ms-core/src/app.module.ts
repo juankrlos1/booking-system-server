@@ -19,12 +19,6 @@ import { HttpClientModule } from './http-client/http-client.module';
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
       logging: true,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-      extra: {
-        sslmode: process.env.DB_SSLMODE,
-      },
     }),
     ReservationModule,
     ReservationUserModule,

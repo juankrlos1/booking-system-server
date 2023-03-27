@@ -67,6 +67,7 @@ CREATE TABLE users (
     last_name VARCHAR(255) NOT NULL,
     role_id INTEGER NOT NULL,
     area_id INTEGER NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     created_by VARCHAR(100),
     updated_at TIMESTAMP,
@@ -114,7 +115,7 @@ CREATE INDEX idx_buildings_name ON buildings (name);
 -- Create levels table
 CREATE TABLE levels (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
     building_id INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     created_by VARCHAR(100),
@@ -137,11 +138,11 @@ CREATE INDEX idx_levels_building_id ON levels (building_id);
 -- Create rooms table
 CREATE TABLE rooms (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
     level_id INTEGER NOT NULL,
     capacity INTEGER NOT NULL,
     photo_url VARCHAR(255),
-    status VARCHAR(255) NOT NULL DEFAULT 'available',
+    status VARCHAR(255) NOT NULL DEFAULT 'available',--Activo, Inactivo, Ocupado
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     created_by VARCHAR(100),
     updated_at TIMESTAMP,

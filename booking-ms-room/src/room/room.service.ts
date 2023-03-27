@@ -96,7 +96,7 @@ export class RoomService {
 
   async createRoom(createRoomDto: CreateRoomDto) {
     const room = this.roomRepository.create(createRoomDto);
-    return await this.roomRepository.save(room);
+    return { items: await this.roomRepository.save(room) };
   }
 
   async updateRoom(id: number, updateRoomDto: UpdateRoomDto) {
@@ -109,6 +109,6 @@ export class RoomService {
       throw new NotFoundException(`Room with ID ${id} not found.`);
     }
 
-    return await this.roomRepository.save(user);
+    return { items: await this.roomRepository.save(user) };
   }
 }

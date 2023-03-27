@@ -15,7 +15,7 @@ export class AllExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
 
     const exceptionResponse = exception.getResponse();
-    let message = '';
+    let message: string;
     let errors = [];
 
     if (typeof exceptionResponse === 'string') {

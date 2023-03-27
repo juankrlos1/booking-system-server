@@ -24,12 +24,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
       logging: true,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-      extra: {
-        sslmode: process.env.DB_SSLMODE,
-      },
     }),
     RoleModule,
     AreaModule,
