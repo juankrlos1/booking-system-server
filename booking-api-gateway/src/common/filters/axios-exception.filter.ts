@@ -11,7 +11,7 @@ export class AxiosExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     this.logger.debug(
-      'Response axios error: ' + JSON.stringify(exception.response.data),
+      'Response axios error: ' + JSON.stringify(exception.response),
     );
 
     const statusCode = exception.response?.status || 500;

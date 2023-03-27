@@ -1,4 +1,3 @@
-// reservation.dto.ts
 import { UserDto } from './user.dto';
 import { RoomDto } from './room.dto';
 

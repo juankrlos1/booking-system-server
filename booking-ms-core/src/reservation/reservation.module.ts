@@ -8,6 +8,7 @@ import { HTTP_CLIENT } from '../common/constants/tokens';
 import { AxiosHttpClientService } from '../common/client/axios-http-client.service';
 import { ReservationMapper } from './mappers/reservation.mapper';
 import { ReservationUserMapper } from '../reservation-user/mappers/reservation-user.mapper';
+import { RoomService } from '../room/room.service';
 
 @Module({
   imports: [ConfigModule, TypeOrmModule.forFeature([Reservation])],
@@ -16,6 +17,7 @@ import { ReservationUserMapper } from '../reservation-user/mappers/reservation-u
     ReservationService,
     ReservationMapper,
     ReservationUserMapper,
+    RoomService,
     {
       provide: HTTP_CLIENT,
       useClass: AxiosHttpClientService,

@@ -1,8 +1,10 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
+  Post,
   Put,
   Query,
   UseGuards,
@@ -13,6 +15,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ReservationFilter } from './dto/reservation-filter.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateReservationDto } from './dto/create-reservation.dto';
 
 @ApiTags('Reservations')
 @Controller('reservations')
@@ -31,5 +34,14 @@ export class ReservationsController {
   @Roles('ADMIN', 'USER')
   getReservationsByUser(@Param('id', ParseIntPipe) id: number) {
     return this.reservationsService.getReservationsByUser(id);
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'USER')
+  createReservation(@Body() createReservationDto: CreateReservationDto) {
+    return this.reservationsService.createReservationByUser(
+      createReservationDto,
+    );
   }
 }

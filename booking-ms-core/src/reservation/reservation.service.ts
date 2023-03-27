@@ -9,17 +9,19 @@ import { IHttpClient } from '../common/interfaces/http-client.interface';
 import { HTTP_CLIENT } from '../common/constants/tokens';
 import { ReservationFilter } from './dto/reservation-filter.dto';
 import { ReservationMapper } from './mappers/reservation.mapper';
+import { RoomService } from '../room/room.service';
+import { ReservationResponse } from './interfaces/reservation.response';
 
 @Injectable()
 export class ReservationService {
   private readonly userBaseUrl: string;
-  private readonly roomBaseUrl: string;
 
   constructor(
     @InjectRepository(Reservation)
     private readonly reservationRepository: Repository<Reservation>,
     private readonly configService: ConfigService,
     private readonly reservationMapper: ReservationMapper,
+    private readonly roomService: RoomService,
     @Inject(HTTP_CLIENT) private readonly httpClient: IHttpClient,
   ) {}
   async create(createReservationDto: CreateReservationDto) {
@@ -62,8 +64,20 @@ export class ReservationService {
       where: { userId: id },
     });
     return {
-      items: this.reservationMapper.toResponseDtoList(reservations),
+      items: await this.mapAddRoomName(
+        this.reservationMapper.toResponseDtoList(reservations),
+      ),
     };
+  }
+
+  private async mapAddRoomName(
+    reservations: ReservationResponse[],
+  ): Promise<ReservationResponse[]> {
+    for (const reservation of reservations) {
+      const room = await this.roomService.getRoomById(reservation.roomId);
+      reservation.roomName = room.items.name;
+    }
+    return reservations;
   }
 
   update(id: number, updateReservationDto: UpdateReservationDto) {
