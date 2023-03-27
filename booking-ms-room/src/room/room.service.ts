@@ -71,7 +71,7 @@ export class RoomService {
   }
 
   async updateStatusToActive(id: number) {
-    return this.roomRepository.update(id, { status: 'ACTIVO' });
+    return await this.roomRepository.update(id, { status: 'ACTIVO' });
   }
 
   private createFilteredQueryBuilder(
