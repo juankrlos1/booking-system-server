@@ -1,0 +1,15 @@
+FROM node:18.14.1-alpine
+
+RUN mkdir -p /usr/src/app && chown -R node:node /usr/src/app
+WORKDIR /usr/src/app
+
+USER node
+COPY --chown=node:node package*.json ./
+COPY --chown=node:node package-lock.json ./
+RUN npm ci --only=production
+
+COPY --chown=node:node . .
+
+EXPOSE 3002
+
+CMD ["npm", "start"]
