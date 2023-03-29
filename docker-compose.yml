@@ -1,0 +1,81 @@
+version: '3.9'
+
+services:
+  api-gateway:
+    build: ./booking-api-gateway
+    image: booking-api-gateway
+    ports:
+      - '3000:3000'
+    environment:
+      AUTH_SERVICE_URL: 'http://booking-ms-authentication:3001/api/v1/auth'
+      USER_SERVICE_URL: 'http://booking-ms-user:3002/api/v1/users'
+      ROOM_SERVICE_URL: 'http://booking-ms-room:3003/api/v1/rooms'
+      CORE_SERVICE_URL: 'http://booking-ms-core:3004/api/v1/reservations'
+      NOTIFICATION_SERVICE_URL: 'http://booking-ms-notification:3005/api/v1/notifications'
+
+  booking-postgres:
+    image: postgres:latest
+    container_name: booking-postgres
+    environment:
+      POSTGRES_USER: booking-admin-user
+      POSTGRES_PASSWORD: kGiV0r5NBoy4XcAtu_xcWQ
+      POSTGRES_DB: booking_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  booking-ms-authentication:
+    build: ./booking-ms-authentication
+    image: booking-ms-authentication
+    environment:
+      - DB_HOST=booking-postgres
+      - DB_PORT=5432
+      - DB_NAME=booking_db
+      - DB_USERNAME=booking-admin-user
+      - DB_PASSWORD=kGiV0r5NBoy4XcAtu_xcWQ
+
+  booking-ms-user:
+    build: ./booking-ms-user
+    image: booking-ms-user
+    environment:
+      - DB_HOST=booking-postgres
+      - DB_PORT=5432
+      - DB_NAME=booking_db
+      - DB_USERNAME=booking-admin-user
+      - DB_PASSWORD=kGiV0r5NBoy4XcAtu_xcWQ
+
+  booking-ms-core:
+    build: ./booking-ms-core
+    image: booking-ms-core
+    environment:
+      - DB_HOST=booking-postgres
+      - DB_PORT=5432
+      - DB_NAME=booking_db
+      - DB_USERNAME=booking-admin-user
+      - DB_PASSWORD=kGiV0r5NBoy4XcAtu_xcWQ
+      - USER_SERVICE_URL=http://booking-ms-user:3002/api/v1/users
+      - ROOM_SERVICE_URL=http://booking-ms-room:3003/api/v1/rooms
+
+  booking-ms-room:
+    build: ./booking-ms-room
+    image: booking-ms-room
+    environment:
+      - DB_HOST=booking-postgres
+      - DB_PORT=5432
+      - DB_NAME=booking_db
+      - DB_USERNAME=booking-admin-user
+      - DB_PASSWORD=kGiV0r5NBoy4XcAtu_xcWQ
+
+  booking-ms-notification:
+    build: ./booking-ms-notification
+    image: booking-ms-notification
+    environment:
+      - DB_HOST=booking-postgres
+      - DB_PORT=5432
+      - DB_NAME=booking_db
+      - DB_USERNAME=booking-admin-user
+      - DB_PASSWORD=kGiV0r5NBoy4XcAtu_xcWQ
+
+volumes:
+  postgres_data:
